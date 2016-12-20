@@ -75,21 +75,19 @@ public class Knapsack {
         for(int x = 0; x < this.suckSize+1; x++)
             solutions[0][x] = 0;
 
-        int prevYes, prevNo;
-
         for(int i = 1; i < this.numItems+1; i++){
             for(int x = 0; x < this.suckSize + 1; x ++){
 
-                if(x >= items[i].weight)
-                    prevYes = solutions[i-1][x-items[i].weight];
+                if(x < items[i].weight)
+                    solutions[i][x] = 0;
                 else
-                    prevYes = 0;
+                    solutions[i][x] = Math.max(
+                            solutions[i-1][x],
+                            solutions[i-1][x-items[i].weight]+items[i].value);
 
-                prevNo  = solutions[i-1][x];
-                solutions[i][x] = Math.max(prevNo,prevYes+items[i].value);
-                System.out.print("\t"+solutions[i][x]);
+//                System.out.print("\t"+solutions[i][x]);
             }
-            System.out.println();
+//            System.out.println();
         }
 
         return solutions[numItems][suckSize];
@@ -99,8 +97,8 @@ public class Knapsack {
 
         int[][] items = {{3,4}, {2,3}, {4,2}, {4,3}};
         Knapsack ks = new Knapsack();
-//        ks.init("knapsack1.txt");
-        ks.init(6,items);
+        ks.init("knapsack1.txt");
+//        ks.init(6,items);
 
         System.out.println("Solution = "+ ks.proceed());
 
