@@ -59,35 +59,37 @@ public class Knapsack {
         this.suckSize = suckSize;
         this.numItems = items.length;
 
-        System.out.println("nItems = " + this.numItems);
+//        System.out.println("nItems = " + this.numItems);
 
         this.items = new Item[items.length+1];
         this.solutions = new int[numItems+1][suckSize + 1];
 
         for(int idx = 1;idx < this.items.length;idx++){
-            System.out.println("\t"+items[idx-1][0]+"\t"+items[idx-1][1]);
+//            System.out.println("\t"+items[idx-1][0]+"\t"+items[idx-1][1]);
             this.items[idx] = new Item(items[idx-1][0], items[idx-1][1]);
         }
     }
 
     public int proceed(){
         // Initialization
+        //What if the knapsack's capacity is 0 - Set all rows at column 0 to be 0
         for(int x = 0; x < this.suckSize+1; x++)
             solutions[0][x] = 0;
+
+        //??What if there are no items at home.  Fill the first row with 0
 
         for(int i = 1; i < this.numItems+1; i++){
             for(int x = 0; x < this.suckSize + 1; x ++){
 
                 if(x < items[i].weight)
-                    solutions[i][x] = 0;
+                    //If the current item's weight is more than the running weight, just carry forward the value without the current item
+                    solutions[i][x] = solutions[i-1][x];
                 else
                     solutions[i][x] = Math.max(
                             solutions[i-1][x],
-                            solutions[i-1][x-items[i].weight]+items[i].value);
-
-//                System.out.print("\t"+solutions[i][x]);
+                            solutions[i-1][x-items[i].weight]+items[i].value
+                    );
             }
-//            System.out.println();
         }
 
         return solutions[numItems][suckSize];
@@ -100,7 +102,18 @@ public class Knapsack {
         ks.init("knapsack1.txt");
 //        ks.init(6,items);
 
-        System.out.println("Solution = "+ ks.proceed());
+        System.out.println("Number of items : " + ks.numItems);
+        System.out.println("Size of knapsack: " + ks.suckSize);
+//        System.out.println("\n-----------------------------");
+//        System.out.println("Item #1         : value - "+ ks.items[1].value+", weight - "+ks.items[1].weight);
+//        System.out.println("Item #2         : value - "+ ks.items[2].value+", weight - "+ks.items[2].weight);
+//        System.out.println("Item #3         : value - "+ ks.items[3].value+", weight - "+ks.items[3].weight);
+//        System.out.println("Item #98         : value - "+ ks.items[98].value+", weight - "+ks.items[98].weight);
+//        System.out.println("Item #99         : value - "+ ks.items[99].value+", weight - "+ks.items[99].weight);
+//        System.out.println("Item #100        : value - "+ ks.items[100].value+", weight - "+ks.items[100].weight);
+
+        System.out.println("\n-----------------------------");
+        System.out.println("Solution        : "+ ks.proceed());
 
     }
 }
