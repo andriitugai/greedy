@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by Andrii_Tugai on 12/20/2016.
@@ -16,7 +17,13 @@ class Item {
         this.value = value;
         this.weight = weight;
     }
+
+    @Override
+    public String toString(){
+        return String.format("(%10d,%10d)", this.value, this.weight);
+    }
 }
+
 public class Knapsack {
 
     private Item[] items;
@@ -59,13 +66,10 @@ public class Knapsack {
         this.suckSize = suckSize;
         this.numItems = items.length;
 
-//        System.out.println("nItems = " + this.numItems);
-
         this.items = new Item[items.length+1];
         this.solutions = new int[numItems+1][suckSize + 1];
 
         for(int idx = 1;idx < this.items.length;idx++){
-//            System.out.println("\t"+items[idx-1][0]+"\t"+items[idx-1][1]);
             this.items[idx] = new Item(items[idx-1][0], items[idx-1][1]);
         }
     }
@@ -91,8 +95,30 @@ public class Knapsack {
                     );
             }
         }
-
         return solutions[numItems][suckSize];
+    }
+
+    public ArrayList<Item> restore(){
+        ArrayList<Item> bag = new ArrayList<>();
+
+        int curSize = suckSize;
+        int curItem = numItems;
+
+        int curValue = solutions[curItem][curSize];
+
+        while(curValue > 0){
+            if(curValue == solutions[curItem-1][curSize]){  // curItem isn't included in bag
+                curItem --;
+            } else {                                        // curItem is included in bag
+                bag.add(items[curItem]);
+                curValue    -= items[curItem].value;
+                curSize     -= items[curItem].weight;
+                curItem     -= 1;
+                if(solutions[curItem][curSize] != curValue)
+                    System.out.println("Alert! Item #"+curItem);
+            }
+        }
+        return bag;
     }
 
     public static void main(String[] args) {
@@ -104,16 +130,27 @@ public class Knapsack {
 
         System.out.println("Number of items : " + ks.numItems);
         System.out.println("Size of knapsack: " + ks.suckSize);
-//        System.out.println("\n-----------------------------");
-//        System.out.println("Item #1         : value - "+ ks.items[1].value+", weight - "+ks.items[1].weight);
-//        System.out.println("Item #2         : value - "+ ks.items[2].value+", weight - "+ks.items[2].weight);
-//        System.out.println("Item #3         : value - "+ ks.items[3].value+", weight - "+ks.items[3].weight);
-//        System.out.println("Item #98         : value - "+ ks.items[98].value+", weight - "+ks.items[98].weight);
-//        System.out.println("Item #99         : value - "+ ks.items[99].value+", weight - "+ks.items[99].weight);
-//        System.out.println("Item #100        : value - "+ ks.items[100].value+", weight - "+ks.items[100].weight);
 
+//        System.out.println("\n-----------------------------");
+//        System.out.println(ks.items[1]);
+//        System.out.println(ks.items[2]);
+//        System.out.println(ks.items[3]);
         System.out.println("\n-----------------------------");
         System.out.println("Solution        : "+ ks.proceed());
+
+        ArrayList<Item> bag = ks.restore();
+        int totalWeight = 0;
+        int totalValue = 0;
+        System.out.println("Knapsack contains:");
+        int idx = 0;
+        for (Item item: bag){
+            System.out.printf("%3d. %s\n",++idx, item);
+            totalValue += item.value;
+            totalWeight += item.weight;
+        }
+        System.out.println("-----------------------------");
+        System.out.println("Total weight = " + totalWeight);
+        System.out.println("Total value  = " + totalValue);
 
     }
 }
